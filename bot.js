@@ -137,22 +137,22 @@ bot.on('message', async (msg) => {
   // 5+ подряд без паузы → удалить все + мут 30 минут.
   // ==============================================================
   if (D.isSpamMedia(msg)) {
-    await act.del(bot, cid, mid); // удаляем сразу каждый в серии
     if (!adminFlag) {
       const cnt = db.trackSpam(uid, cid);
       if (cnt >= 5) {
-        // Серия из 5+ без паузы — мут
+        // 5-й подряд без паузы — удаляем + мут
+        await act.del(bot, cid, mid);
         db.resetSpam(uid, cid);
         const muteMsg = await act.doMute(bot, cid, uid, uname, fullName, 1800,
-          `Спам: ${cnt} стикеров/гифок/эмодзи подряд без паузы (правило 2)`, 'Автомод');
+          `Спам: 5 стикеров/гифок/эмодзи подряд (правило 2)`, 'Автомод');
         await act.say(bot, cid, muteMsg);
-      } else {
-        // Предупреждение (показываем только на 3-м и 4-м)
-        if (cnt >= 3) {
-          await act.say(bot, cid,
-            `⚠️ ${D.mention(uid, fullName)}, не спамь! ${cnt}/5 — ещё ${5 - cnt} и мут на 30 минут.`);
-        }
+      } else if (cnt === 4) {
+        // Предупреждение на 4-м
+        await act.say(bot, cid,
+          `⚠️ ${D.mention(uid, fullName)}, ещё 1 — и мут на 30 минут!`);
       }
+      // 1-4: не удаляем, не предупреждаем (кроме 4-го)
+      // пауза > 2 сек — trackSpam вернёт 1, счётчик сброшен
     }
     return;
   }
@@ -712,8 +712,6 @@ bot.onText(/^\/help\b/i, async (msg) => {
   }
   await act.say(bot, msg.chat.id, text);
 });
-
-// ================================================================
 bot.on('polling_error', e => console.error('polling_error:', e.message));
 bot.on('error',         e => console.error('bot error:',     e.message));
 
