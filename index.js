@@ -26,7 +26,7 @@ const pending = new Map();
 // { n: число, lastAt: timestamp }
 // Если прошло больше 10 секунд без сообщений этого типа — серия сбрасывается
 const spamMap = new Map();
-const SPAM_WINDOW = 10000;
+const SPAM_WINDOW = 3000;
 
 function spamInc(chatId, userId, type) {
   const key = chatId + '_' + userId + '_' + type;
