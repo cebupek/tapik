@@ -71,7 +71,7 @@ async function getTarget(msg) {
 }
 
 // ================================================================
-// ПИНГ КАЖДЫЕ 2 СЕКУНДЫ — проверка что бот живой
+// ПИНГ КАЖДУЮ СЕКУНДУ — проверка что бот живой
 // ================================================================
 let pingOk = true;
 setInterval(async () => {
@@ -87,7 +87,7 @@ setInterval(async () => {
       pingOk = false;
     }
   }
-}, 2000);
+}, 1000);
 cron.schedule('*/20 * * * * *', async () => {
   const expired = db.getExpired();
   for (const p of expired) {
